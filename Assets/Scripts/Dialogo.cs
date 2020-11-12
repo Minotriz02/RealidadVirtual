@@ -9,23 +9,37 @@ public class Dialogo : MonoBehaviour
     public GameObject personaje;
     float distancia;
     public Camera camarapersonaje;
+    Vector3 originrc;
+    Vector3 directionrc;
     
-
-    // Start is called before the first frame update
     void Awake()
     {
         fuente = GetComponent<AudioSource>();
     }
+    
 
     // Update is called once per frame
     void Update()
     {
-
+        RaycastHit hit;
+        originrc = camarapersonaje.transform.position;
+        directionrc = camarapersonaje.transform.forward;
         distancia = Vector3.Distance(this.transform.position, personaje.transform.position);
 
-        if (distancia <= 2.75f && Input.GetKey(KeyCode.E))
+        if(Physics.Raycast(originrc,directionrc,out hit, 10f))
         {
-            fuente.Play();
+            string name = hit.collider.gameObject.name;
+            if (distancia <= 2.75f && Input.GetKey(KeyCode.E)&&name==this.name)
+            {
+                fuente.Play();
+            }
         }
+        
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;//Color del rayo en el editor
+        Gizmos.DrawRay(camarapersonaje.transform.position, camarapersonaje.transform.forward*10f);
     }
 }
