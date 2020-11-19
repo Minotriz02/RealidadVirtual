@@ -11,9 +11,11 @@ public class Dialogo : MonoBehaviour
     public Camera camarapersonaje;
     Vector3 originrc;
     Vector3 directionrc;
+    public GameObject hud;
     
     void Awake()
     {
+        hud.SetActive(false);
         fuente = GetComponent<AudioSource>();
     }
     
@@ -21,6 +23,8 @@ public class Dialogo : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        hud.SetActive(false);
         RaycastHit hit;
         originrc = camarapersonaje.transform.position;
         directionrc = camarapersonaje.transform.forward;
@@ -29,11 +33,22 @@ public class Dialogo : MonoBehaviour
         if(Physics.Raycast(originrc,directionrc,out hit, 10f))
         {
             string name = hit.collider.gameObject.name;
-            if (distancia <= 2.75f && Input.GetKey(KeyCode.E)&&name==this.name)
+            if (distancia <= 3f && name == this.name)
             {
-                fuente.Play();
+                hud.SetActive(true);
+                if (Input.GetKey(KeyCode.E)) {
+                    fuente.Play();
+                }
+                
+            }
+            else
+            {
+                hud.SetActive(false);
             }
         }
+        
+        
+        
         
     }
 
