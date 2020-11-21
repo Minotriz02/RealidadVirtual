@@ -13,8 +13,8 @@ public class Dialogo : MonoBehaviour
     Vector3 originrc;
     Vector3 directionrc;
     public GameObject hud;
-
-
+    public GameObject subtitle;
+    bool isTalking;
 
 
     SerialPort arduinoPort = new SerialPort("COM3",9600);
@@ -26,6 +26,7 @@ public class Dialogo : MonoBehaviour
      }
     void Awake()
     {
+        subtitle.SetActive(false);
         hud.SetActive(false);
         fuente = GetComponent<AudioSource>();
     }
@@ -33,29 +34,36 @@ public class Dialogo : MonoBehaviour
     void Start(){
       arduinoPort.Open();
       arduinoPort.ReadTimeout=100;
+        isTalking = false;
     }
 
 
     // Update is called once per frame
     void Update()
     {
-
+        
         hud.SetActive(false);
         RaycastHit hit;
         originrc = camarapersonaje.transform.position;
         directionrc = camarapersonaje.transform.forward;
         distancia = Vector3.Distance(this.transform.position, personaje.transform.position);
 
-        if(Physics.Raycast(originrc,directionrc,out hit, 10f))
+        if(Physics.Raycast(originrc,directionrc,out hit, 10f) && isTalking == false)
         {
+            
             string name = hit.collider.gameObject.name;
-            if (distancia <= 3f && name == this.name)
+            if (distancia <= 3f && name == this.name )
             {
+                
                 hud.SetActive(true);
                 if (Input.GetKey(KeyCode.E)) {
+                    isTalking = true;
+                    hud.SetActive(false);
+                    subtitle.SetActive(true);
                     fuente.Play();
                     vibeIn();
                     Invoke("vibeOut",2.5f);
+                    Invoke("Hud", 2.5f);
                 }
 
             }
@@ -84,7 +92,13 @@ public class Dialogo : MonoBehaviour
       }
 
 
+    private void Hud()
+    {
+        isTalking = false;
+        hud.SetActive(true);
+        subtitle.SetActive(false);
 
+    }
 
 
 
