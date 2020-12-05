@@ -24,40 +24,65 @@ public class Dialogo : MonoBehaviour
     public TextMeshProUGUI subtitle;
     bool isTalking;
     bool ismothered;
-    
+
     //TextMeshProUGUI subtitle;
 
     SerialPort arduinoPort = new SerialPort("COM3",9600);
 
 
-    void OnDisable(){
-        arduinoPort.Close();
+    void OnApplicationQuit ()
+    {
 
-     }
+        if ( arduinoPort != null )
+        {
+            arduinoPort.Close();
+        }
+    }
+
+
     void Awake()
     {
         //subtitlego.SetActive(false);
         hud.SetActive(false);
         //subtitle = null;
         //fuente = GetComponent<AudioSource>();
-        
+
         subtitle.SetText("");
     }
 
     void Start(){
 
-      arduinoPort.Open();
-      arduinoPort.ReadTimeout=100;
+
+      if ( arduinoPort != null )
+        {
+            if ( arduinoPort.IsOpen ) // close if already open
+            {
+                arduinoPort.Close();
+                Debug.Log ("Closed stream");
+            }
+
+            arduinoPort.Open();
+            Debug.Log ("Opened stream");
+        }
+        else
+        {
+            Debug.Log ("ERROR: Uninitialized stream");
+        }
+
+
+
+        arduinoPort.ReadTimeout=100;
         ismothered = false;
         isTalking = false;
         subtitle = GetComponent<TextMeshProUGUI>();
+
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        
+
         //hud.SetActive(false);
         RaycastHit hit;
         originrc = camarapersonaje.transform.position;
@@ -69,12 +94,12 @@ public class Dialogo : MonoBehaviour
 
         if (Physics.Raycast(originrc,directionrc,out hit, 10f) && isTalking == false)
         {
-            
+
             string name = hit.collider.gameObject.name;
             Debug.Log(name);
             if (distanciaMom <= 3f && name.Equals("Mom") )
             {
-                
+
                 hud.SetActive(true);
                 if (Input.GetKey(KeyCode.E)) {
                     ismothered = true;
@@ -87,13 +112,13 @@ public class Dialogo : MonoBehaviour
                     Invoke("Hud", 17.3f);
                 }
 
-            }         
+            }
             else if (distanciaA1 <= 3f && name.Equals("Aldeano1"))
             {
                 hud.SetActive(true);
                 if (ismothered)
                 {
-                    
+
                     if (Input.GetKey(KeyCode.E))
                     {
                         isTalking = true;
@@ -195,7 +220,7 @@ public class Dialogo : MonoBehaviour
         if (arduinoPort.IsOpen){
           arduinoPort.Write("B");
         }
-        
+
      }
 
 
@@ -226,7 +251,7 @@ public class Dialogo : MonoBehaviour
     {
         yield return new WaitForSeconds(3.2f);
         subtitle.SetText("Madre: Bueno mijo, se cuida mucho que por acá las cosas están como feas.");
-        
+
     }
 
     private IEnumerator AldeanoAnswer1()
@@ -240,7 +265,7 @@ public class Dialogo : MonoBehaviour
     {
         yield return new WaitForSeconds(5.2f);
         subtitle.SetText("Tú: Ay don Fabio, no me diga eso. Voy a seguir preguntando, gracias.");
-        
+
     }
 
     private IEnumerator Aldeano2Answer1()
@@ -262,7 +287,7 @@ public class Dialogo : MonoBehaviour
         subtitle.SetText("Vecino: No papi, yo a su hermano no lo veo desde que me dijo que iba a cobrar una plata pero yo se quien le puede tener ese dato; vea, usted sale del pueblo y allá hay una casa con un murito como verde, allí hay unos supuestos paramilitares, pregúntele a alguno de ellos a ver si le colaboran.");
     }
 
-    
+
 
 
 
